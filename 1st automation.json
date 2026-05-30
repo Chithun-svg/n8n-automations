@@ -1,0 +1,123 @@
+{
+  "name": "1st automation",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5ea2306b-542c-4df5-b06d-7b54b1a2518e",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IKWgXB27oDLQMiYR",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "models/gemini-3-flash-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Summarize the following email in 3-5 bullet points. Be concise and highlight any action items.\n\nSubject: {{ $json.subject }}\nFrom: {{ $json.from }}\nBody: {{ $json.snippet }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "d4ce7d7d-3faa-454a-ae1c-c2a3bfbe9d73",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "RrZq25xclE8EVLzG",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "barryalex933@gmail.com",
+        "subject": "=AI Summary: {{ $('Gmail Trigger').item.json.subject }}",
+        "message": "={{ $('Message a model').item.json.content.parts[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "3b3079fc-7a06-434b-8f99-20aa86548731",
+      "name": "Send a message",
+      "webhookId": "4f75b588-9b46-494f-a417-92c9c85e6684",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IKWgXB27oDLQMiYR",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "77656ee5-910c-43ff-8fc2-a57f49e9d8d1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0d2a466e027cb6f154946929fc4ff01c9e5f6a1f5b91f2c11196332f32f51a02"
+  },
+  "id": "LSGpwqZz30COZ6dB",
+  "tags": []
+}
